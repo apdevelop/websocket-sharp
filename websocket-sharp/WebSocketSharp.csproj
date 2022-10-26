@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+		<AssemblyName>WebSocketSharp</AssemblyName>
+		<AssemblyTitle>WebSocketSharp</AssemblyTitle>
+		<Description>C# implementation of the WebSocket protocol client and server</Description>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<Company></Company>
+		<Copyright>sta.blockhead</Copyright>
+		<RootNamespace>WebSocketSharp</RootNamespace>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<AssemblyTitle>WebSocketSharp for .NET Standard 2.0</AssemblyTitle>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net472'">
+		<AssemblyTitle>WebSocketSharp for .NET Framework 4.7.2</AssemblyTitle>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="AssemblyInfo.cs" />
+		<None Remove="doc\**" />
+		<None Remove="websocket-sharp.snk" />
+	</ItemGroup>
+
+</Project>

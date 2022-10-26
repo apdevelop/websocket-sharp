@@ -4,6 +4,7 @@
 
 websocket-sharp supports:
 
+- VS2019 solution and project `WebSocketSharp`, targeting .NET Standard 2.0 (`netstandard2.0`) and .NET Framework 4.7.2 (`net472`)
 - [RFC 6455](#supported-websocket-specifications)
 - [WebSocket Client](#websocket-client) and [Server](#websocket-server)
 - [Per-message Compression](#per-message-compression) extension
