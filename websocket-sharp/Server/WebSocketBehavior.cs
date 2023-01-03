@@ -97,6 +97,28 @@ namespace WebSocketSharp.Server
     }
 
     /// <summary>
+    /// Gets a value indicating whether the communication is possible for
+    /// a session.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the communication is possible; otherwise, <c>false</c>.
+    /// </value>
+    /// <exception cref="InvalidOperationException">
+    /// The session has not started yet.
+    /// </exception>
+    protected bool IsAlive {
+      get {
+        if (_websocket == null) {
+          var msg = "The session has not started yet.";
+
+          throw new InvalidOperationException (msg);
+        }
+
+        return _websocket.IsAlive;
+      }
+    }
+
+    /// <summary>
     /// Gets the query string for a session.
     /// </summary>
     /// <value>
@@ -265,8 +287,8 @@ namespace WebSocketSharp.Server
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the WebSocket interface for
-    /// a session emits the message event when receives a ping.
+    /// Gets or sets a value indicating whether the message event is emitted
+    /// when the WebSocket interface for a session receives a ping.
     /// </summary>
     /// <value>
     ///   <para>
@@ -581,7 +603,7 @@ namespace WebSocketSharp.Server
     ///   A <see cref="string"/> that specifies the reason for the close.
     ///   </para>
     ///   <para>
-    ///   The size must be 123 bytes or less in UTF-8.
+    ///   Its size must be 123 bytes or less in UTF-8.
     ///   </para>
     /// </param>
     /// <exception cref="InvalidOperationException">
@@ -648,26 +670,22 @@ namespace WebSocketSharp.Server
     ///   A <see cref="string"/> that specifies the reason for the close.
     ///   </para>
     ///   <para>
-    ///   The size must be 123 bytes or less in UTF-8.
+    ///   Its size must be 123 bytes or less in UTF-8.
     ///   </para>
     /// </param>
     /// <exception cref="InvalidOperationException">
     /// The session has not started yet.
     /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// The size of <paramref name="reason"/> is greater than 123 bytes.
-    /// </exception>
     /// <exception cref="ArgumentException">
     ///   <para>
-    ///   <paramref name="code"/> is
-    ///   <see cref="CloseStatusCode.MandatoryExtension"/>.
+    ///   <paramref name="code"/> is <see cref="CloseStatusCode.MandatoryExtension"/>.
     ///   </para>
     ///   <para>
     ///   -or-
     ///   </para>
     ///   <para>
-    ///   <paramref name="code"/> is <see cref="CloseStatusCode.NoStatus"/>
-    ///   and <paramref name="reason"/> is specified.
+    ///   <paramref name="code"/> is <see cref="CloseStatusCode.NoStatus"/> and
+    ///   <paramref name="reason"/> is specified.
     ///   </para>
     ///   <para>
     ///   -or-
@@ -675,6 +693,9 @@ namespace WebSocketSharp.Server
     ///   <para>
     ///   <paramref name="reason"/> could not be UTF-8-encoded.
     ///   </para>
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The size of <paramref name="reason"/> is greater than 123 bytes.
     /// </exception>
     protected void Close (CloseStatusCode code, string reason)
     {
@@ -742,7 +763,7 @@ namespace WebSocketSharp.Server
     ///   A <see cref="string"/> that specifies the reason for the close.
     ///   </para>
     ///   <para>
-    ///   The size must be 123 bytes or less in UTF-8.
+    ///   Its size must be 123 bytes or less in UTF-8.
     ///   </para>
     /// </param>
     /// <exception cref="InvalidOperationException">
@@ -814,7 +835,7 @@ namespace WebSocketSharp.Server
     ///   A <see cref="string"/> that specifies the reason for the close.
     ///   </para>
     ///   <para>
-    ///   The size must be 123 bytes or less in UTF-8.
+    ///   Its size must be 123 bytes or less in UTF-8.
     ///   </para>
     /// </param>
     /// <exception cref="InvalidOperationException">
@@ -822,15 +843,14 @@ namespace WebSocketSharp.Server
     /// </exception>
     /// <exception cref="ArgumentException">
     ///   <para>
-    ///   <paramref name="code"/> is
-    ///   <see cref="CloseStatusCode.MandatoryExtension"/>.
+    ///   <paramref name="code"/> is <see cref="CloseStatusCode.MandatoryExtension"/>.
     ///   </para>
     ///   <para>
     ///   -or-
     ///   </para>
     ///   <para>
-    ///   <paramref name="code"/> is <see cref="CloseStatusCode.NoStatus"/>
-    ///   and <paramref name="reason"/> is specified.
+    ///   <paramref name="code"/> is <see cref="CloseStatusCode.NoStatus"/> and
+    ///   <paramref name="reason"/> is specified.
     ///   </para>
     ///   <para>
     ///   -or-
@@ -926,7 +946,7 @@ namespace WebSocketSharp.Server
     ///   A <see cref="string"/> that specifies the message to send.
     ///   </para>
     ///   <para>
-    ///   The size must be 125 bytes or less in UTF-8.
+    ///   Its size must be 125 bytes or less in UTF-8.
     ///   </para>
     /// </param>
     /// <exception cref="InvalidOperationException">
