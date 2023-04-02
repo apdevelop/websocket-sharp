@@ -59,7 +59,6 @@ namespace WebSocketSharp.Server
     #region Private Fields
 
     private System.Net.IPAddress               _address;
-    private bool                               _allowForwardedRequest;
     private AuthenticationSchemes              _authSchemes;
     private static readonly string             _defaultRealm;
     private bool                               _dnsStyle;
@@ -333,38 +332,6 @@ namespace WebSocketSharp.Server
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the server accepts every
-    /// handshake request without checking the request URI.
-    /// </summary>
-    /// <remarks>
-    /// The set operation works if the current state of the server is
-    /// Ready or Stop.
-    /// </remarks>
-    /// <value>
-    ///   <para>
-    ///   <c>true</c> if the server accepts every handshake request without
-    ///   checking the request URI; otherwise, <c>false</c>.
-    ///   </para>
-    ///   <para>
-    ///   The default value is <c>false</c>.
-    ///   </para>
-    /// </value>
-    public bool AllowForwardedRequest {
-      get {
-        return _allowForwardedRequest;
-      }
-
-      set {
-        lock (_sync) {
-          if (!canSet ())
-            return;
-
-          _allowForwardedRequest = value;
-        }
-      }
-    }
-
-    /// <summary>
     /// Gets or sets the scheme used to authenticate the clients.
     /// </summary>
     /// <remarks>
@@ -434,8 +401,8 @@ namespace WebSocketSharp.Server
     /// </remarks>
     /// <value>
     ///   <para>
-    ///   <c>true</c> if the server cleans up the inactive sessions every
-    ///   60 seconds; otherwise, <c>false</c>.
+    ///   <c>true</c> if the server cleans up the inactive sessions
+    ///   every 60 seconds; otherwise, <c>false</c>.
     ///   </para>
     ///   <para>
     ///   The default value is <c>true</c>.
@@ -786,18 +753,12 @@ namespace WebSocketSharp.Server
         return;
       }
 
-      if (!_allowForwardedRequest) {
-        if (uri.Port != _port) {
-          context.Close (HttpStatusCode.BadRequest);
+      var name = uri.DnsSafeHost;
 
-          return;
-        }
+      if (!checkHostNameForRequest (name)) {
+        context.Close (HttpStatusCode.NotFound);
 
-        if (!checkHostNameForRequest (uri.DnsSafeHost)) {
-          context.Close (HttpStatusCode.NotFound);
-
-          return;
-        }
+        return;
       }
 
       var path = uri.AbsolutePath;

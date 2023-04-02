@@ -872,9 +872,12 @@ namespace WebSocketSharp
       _base64Key = _context.Headers["Sec-WebSocket-Key"];
 
       if (_protocol != null) {
-        var vals = _context.SecWebSocketProtocols;
+        var matched = _context
+                      .SecWebSocketProtocols
+                      .Contains (p => p == _protocol);
 
-        processSecWebSocketProtocolClientHeader (vals);
+        if (!matched)
+          _protocol = null;
       }
 
       if (!_ignoreExtensions) {
@@ -883,9 +886,7 @@ namespace WebSocketSharp
         processSecWebSocketExtensionsClientHeader (val);
       }
 
-      var res = createHandshakeResponse ();
-
-      sendHttpResponse (res);
+      createHandshakeResponse ().WriteTo (_stream);
 
       return true;
     }
@@ -905,12 +906,6 @@ namespace WebSocketSharp
 
       if (!context.IsWebSocketRequest) {
         message = "Not a WebSocket handshake request.";
-
-        return false;
-      }
-
-      if (context.RequestUri == null) {
-        message = "The Request-URI is invalid.";
 
         return false;
       }
@@ -947,19 +942,23 @@ namespace WebSocketSharp
 
       var subps = headers["Sec-WebSocket-Protocol"];
 
-      if (subps != null && subps.Length == 0) {
-        message = "The Sec-WebSocket-Protocol header is invalid.";
+      if (subps != null) {
+        if (subps.Length == 0) {
+          message = "The Sec-WebSocket-Protocol header is invalid.";
 
-        return false;
+          return false;
+        }
       }
 
       if (!_ignoreExtensions) {
         var exts = headers["Sec-WebSocket-Extensions"];
 
-        if (exts != null && exts.Length == 0) {
-          message = "The Sec-WebSocket-Extensions header is invalid.";
+        if (exts != null) {
+          if (exts.Length == 0) {
+            message = "The Sec-WebSocket-Extensions header is invalid.";
 
-          return false;
+            return false;
+          }
         }
       }
 
@@ -1888,17 +1887,6 @@ namespace WebSocketSharp
       _extensions = value;
     }
 
-    // As server
-    private void processSecWebSocketProtocolClientHeader (
-      IEnumerable<string> values
-    )
-    {
-      if (values.Contains (val => val == _protocol))
-        return;
-
-      _protocol = null;
-    }
-
     private bool processUnsupportedFrame (WebSocketFrame frame)
     {
       _log.Fatal ("An unsupported frame was received.");
@@ -1912,9 +1900,7 @@ namespace WebSocketSharp
     // As server
     private void refuseHandshake (ushort code, string reason)
     {
-      var res = createHandshakeFailureResponse ();
-
-      sendHttpResponse (res);
+      createHandshakeFailureResponse ().WriteTo (_stream);
 
       abort (code, reason);
     }
@@ -2238,12 +2224,6 @@ namespace WebSocketSharp
     )
     {
       return request.GetResponse (_stream, millisecondsTimeout);
-    }
-
-    // As server
-    private void sendHttpResponse (HttpResponse response)
-    {
-      response.WriteTo (_stream);
     }
 
     // As client
